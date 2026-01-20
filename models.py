@@ -46,13 +46,25 @@ class TradingViewAlert(BaseModel):
     """Incoming webhook alert from TradingView"""
     action: Action
     symbol: str
-    price: Optional[float] = None
-    stop_loss_pct: float = Field(default=1.5, ge=0.1, le=10.0)
-    take_profit_pct: float = Field(default=1.5, ge=0.1, le=20.0)
-    trailing_activation_pct: float = Field(default=0.8, ge=0.0, le=10.0)
+
+    # Exact prices (calculated by TradingView) - PREFERRED
+    entry_price: Optional[float] = None
+    stop_price: Optional[float] = None
+    target_price: Optional[float] = None
+    trailing_activation_price: Optional[float] = None
+
+    # Fallback percentages (if exact prices not provided)
+    price: Optional[float] = None  # Deprecated - use entry_price
+    stop_loss_pct: Optional[float] = Field(default=1.5, ge=0.1, le=10.0)
+    take_profit_pct: Optional[float] = Field(default=1.5, ge=0.1, le=20.0)
+    trailing_activation_pct: Optional[float] = Field(default=0.8, ge=0.0, le=10.0)
+
+    # Trailing distance (still use percentage)
     trailing_distance_pct: float = Field(default=0.75, ge=0.1, le=5.0)
+
+    # Position settings
     position_size_usd: float = Field(default=100.0, gt=0)
-    leverage: float = Field(default=1.0, ge=1.0, le=3.0)
+    leverage: float = Field(default=1.0, ge=1.0, le=10.0)  # Increased for nano perps
 
     class Config:
         use_enum_values = True

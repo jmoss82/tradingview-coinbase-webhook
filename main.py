@@ -190,10 +190,19 @@ async def handle_long_entry(alert: TradingViewAlert) -> Dict[str, Any]:
         # Calculate position size in base currency
         position_size = alert.position_size_usd / fill_price
 
-        # Calculate stop/target prices
-        stop_loss_price = fill_price * (1 - alert.stop_loss_pct / 100)
-        take_profit_price = fill_price * (1 + alert.take_profit_pct / 100)
-        trailing_activation_price = fill_price * (1 + alert.trailing_activation_pct / 100)
+        # Use exact prices from TradingView if provided, otherwise calculate from percentages
+        if alert.stop_price is not None and alert.target_price is not None:
+            # Use ATR-calculated exact prices from TradingView
+            stop_loss_price = alert.stop_price
+            take_profit_price = alert.target_price
+            trailing_activation_price = alert.trailing_activation_price or (fill_price * (1 + alert.trailing_activation_pct / 100))
+            logger.info(f"Using exact prices from TradingView: Stop=${stop_loss_price:.2f}, Target=${take_profit_price:.2f}")
+        else:
+            # Fallback: Calculate from percentages
+            stop_loss_price = fill_price * (1 - alert.stop_loss_pct / 100)
+            take_profit_price = fill_price * (1 + alert.take_profit_pct / 100)
+            trailing_activation_price = fill_price * (1 + alert.trailing_activation_pct / 100)
+            logger.warning(f"Using percentage-based calculation: Stop={alert.stop_loss_pct}%, Target={alert.take_profit_pct}%")
 
         # Create position
         position = Position(
@@ -269,10 +278,19 @@ async def handle_short_entry(alert: TradingViewAlert) -> Dict[str, Any]:
         # Calculate position size in base currency
         position_size = alert.position_size_usd / fill_price
 
-        # Calculate stop/target prices (inverted for shorts)
-        stop_loss_price = fill_price * (1 + alert.stop_loss_pct / 100)
-        take_profit_price = fill_price * (1 - alert.take_profit_pct / 100)
-        trailing_activation_price = fill_price * (1 - alert.trailing_activation_pct / 100)
+        # Use exact prices from TradingView if provided, otherwise calculate from percentages
+        if alert.stop_price is not None and alert.target_price is not None:
+            # Use ATR-calculated exact prices from TradingView
+            stop_loss_price = alert.stop_price
+            take_profit_price = alert.target_price
+            trailing_activation_price = alert.trailing_activation_price or (fill_price * (1 - alert.trailing_activation_pct / 100))
+            logger.info(f"Using exact prices from TradingView: Stop=${stop_loss_price:.2f}, Target=${take_profit_price:.2f}")
+        else:
+            # Fallback: Calculate from percentages (inverted for shorts)
+            stop_loss_price = fill_price * (1 + alert.stop_loss_pct / 100)
+            take_profit_price = fill_price * (1 - alert.take_profit_pct / 100)
+            trailing_activation_price = fill_price * (1 - alert.trailing_activation_pct / 100)
+            logger.warning(f"Using percentage-based calculation: Stop={alert.stop_loss_pct}%, Target={alert.take_profit_pct}%")
 
         # Create position
         position = Position(
