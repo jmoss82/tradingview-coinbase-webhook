@@ -38,14 +38,20 @@ https://railway.app/dashboard
 ## Current Settings
 
 **Trading:**
-- Position Size: $25 per trade
+- Position Size: $25 per trade (configurable in TradingView)
+- Leverage: 1x (configurable in TradingView, test at 1x first!)
 - Stop Loss: 1.5%
 - Take Profit: 1.5%
 - Trailing Stop: Activates at +0.8%, trails by 0.75%
 - Max Positions: 3
 
-**Supported Symbols:**
-- BTC-USD, ETH-USD, SOL-USD, AVAX-USD, MATIC-USD
+**Supported Symbols (Coinbase Nano Perpetual Futures):**
+- BIP-20DEC30-CDE (Bitcoin)
+- ETP-20DEC30-CDE (Ethereum)
+- SLP-20DEC30-CDE (Solana)
+- XPP-20DEC30-CDE (XRP)
+
+**Note:** Product IDs will change when contracts roll (currently Dec 30, 2030). Symbol mapping will need updating at rollover.
 
 ## Enabling Live Trading
 
@@ -115,11 +121,19 @@ curl -X POST https://web-production-ef7a1.up.railway.app/close/POSITION_ID
 
 ⚠️ **Before enabling live trading:**
 - Test in paper mode first
+- **START WITH 1x LEVERAGE** - Prove strategy works before increasing
 - Start with small position sizes ($10-25)
 - Monitor closely for first 24 hours
 - Understand market orders have slippage
 - Know how to manually close on Coinbase
+- **Leverage amplifies both gains AND losses** - 5x leverage = 5x risk
 - Never risk more than you can afford to lose
+
+⚠️ **Leverage Notes:**
+- 1x leverage = No leverage (safer, recommended for testing)
+- 5x leverage = $25 position controls $125 of exposure
+- Higher leverage increases liquidation risk
+- Test extensively at 1x before increasing to 5x
 
 ## Support
 
