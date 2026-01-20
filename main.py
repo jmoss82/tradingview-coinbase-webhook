@@ -127,7 +127,7 @@ async def webhook(alert: TradingViewAlert, request: Request):
     """
     try:
         logger.info("=" * 60)
-        logger.info(f"Webhook received: {alert.action.value} on {alert.symbol}")
+        logger.info(f"Webhook received: {alert.action} on {alert.symbol}")
         logger.info(f"Alert data: {alert.dict()}")
 
         # Check if trading is enabled
@@ -136,7 +136,7 @@ async def webhook(alert: TradingViewAlert, request: Request):
             return {
                 "success": True,
                 "message": "Paper trade mode - no real execution",
-                "action": alert.action.value,
+                "action": alert.action,
                 "symbol": alert.symbol
             }
 
